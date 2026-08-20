@@ -30,13 +30,7 @@ are unavailable.
 | 5 | The source ATA reaches zero and closes; the leftover check inspects the unused executor account (positions.rs:1770-1774) | `cosigner_meme_ata = None`, `executor_source` untouched |
 | 6 | The destination SOL-vault value is supplied entirely by the relayer's pre-funded WSOL, not by any swap | `sol_vault = 6_495_439_280` |
 
-The production **fee guard is enforced** by the harness: `relayer_fee >=
-max(min_swap_fee, sol_received * swap_fee_bps / 10_000)` with the destination
-pool's real config injected (`swap_fee_bps = 10`, `min_swap_fee = 50_000`,
-`relayer_fee = 6_600_000`). The theft does not depend on a zero fee; Mallory
-simply fronts a legitimate fee. The harness's private-note issuance, real
-nullifier marking, and `PositionPDA` closure are **not** executed — those are
-established by source analysis of the real handler, not observed here.
+The production **fee guard is enforced** by the harness: `relayer_fee >= max(min_swap_fee, sol_received * swap_fee_bps / 10_000)` with the destination pool's real config injected (`swap_fee_bps = 10`, `min_swap_fee = 50_000`, `relayer_fee = 6_600_000`). The theft does not depend on a zero fee; Mallory simply fronts a legitimate fee. The harness's private-note issuance, real nullifier marking, and `PositionPDA` closure are **not** executed — those are established by source analysis of the real handler, not observed here.
 
 ## Source citations (frozen revision `d81bb1f8d95738ef0fc13fd666333dfaf4757f71`)
 
@@ -55,21 +49,7 @@ established by source analysis of the real handler, not observed here.
 
 ## Scope boundary (honest)
 
-This is a **composition witness**, not a full end-to-end execution of the deployed
-`close_position_to_sol` instruction. The Groth16 proof gate and the surrounding
-privacy-pool accounting (Merkle commitment insertion, private-note issuance, real
-nullifier marking, `PositionPDA` closure) are **not** executed: the production SWAP
-proving artifacts (`swap.r1cs` / `swap_final.zkey` / `swap.wasm`) are server-side
-and not public. The value-moving, staged-CPI, SOL-delta, fee-validation, and cleanup
-mechanics relevant to the theft are reproduced in `harness-lib.rs` and executed
-against the real System / SPL
-Token / Token-2022 programs on a Surfpool mainnet fork. The malicious legs were
-staged through the **real deployed Veilo program**, and the attacker-controlled
-keys (cosigner, relayer) are fresh — proving the theft needs no user wallet
-signature beyond the production close flow (whose claimant key the released wallet
-sends to the relayer; see the submission report). The real handler's nullifier
-marking and `PositionPDA` closure are established by source analysis, not observed
-here.
+This is a **composition witness**, not a full end-to-end execution of the deployed `close_position_to_sol` instruction. The Groth16 proof gate and the surrounding privacy-pool accounting (Merkle commitment insertion, private-note issuance, real nullifier marking, `PositionPDA` closure) are **not** executed: the production SWAP proving artifacts (`swap.r1cs` / `swap_final.zkey` / `swap.wasm`) are server-side and not public. The value-moving, staged-CPI, SOL-delta, fee-validation, and cleanup mechanics relevant to the theft are reproduced in `harness-lib.rs` and executed against the real System / SPL Token / Token-2022 programs on a Surfpool mainnet fork. The malicious legs were staged through the **real deployed Veilo program**, and the attacker-controlled keys (cosigner, relayer) are fresh — proving the theft needs no user wallet signature beyond the production close flow (whose claimant key the released wallet sends to the relayer; see the submission report). The real handler's nullifier marking and `PositionPDA` closure are established by source analysis, not observed here.
 
 ## Gist file layout
 
@@ -97,14 +77,9 @@ loss_fraction=95.0%
 Fixture numbers: `swap_amount = 100_000_000_000` position tokens;
 `dest_amount = 5_000_000_000`; destination SOL-pool config `swap_fee_bps = 10`,
 `min_swap_fee = 50_000`; `relayer_fee = 6_600_000` (satisfies the real guard);
-Mallory fronts `6_500_000_000` lamports of WSOL. `victim_note_backing` is the
-lamports deposited into the SOL-vault fixture (`sol_received - relayer_fee`), i.e.
-the amount that would back the victim's destination SOL note — supplied entirely by
-the relayer, not by any swap. `loss_fraction = 1 - victim_note_backing / swap_amount` is a **legacy fixture-only
-ratio between unlike base units** (source-token units versus lamports). It is not an
-economic-loss percentage and is not used to support severity.
-(≈ the user's committed minimum, plus the legitimate relayer fee and a safety
-margin). The two malicious legs:
+Mallory fronts `6_500_000_000` lamports of WSOL. `victim_note_backing` is the lamports deposited into the SOL-vault fixture (`sol_received - relayer_fee`), i.e. the amount that would back the victim's destination SOL note — supplied entirely by the relayer, not by any swap. `loss_fraction = 1 - victim_note_backing / swap_amount` is a **legacy fixture-only ratio between unlike base units** (source-token units versus lamports). It is not an economic-loss percentage and is not used to support severity.
+
+The two malicious legs are sized to the user's committed minimum, plus the legitimate relayer fee and a safety margin:
 
 1. Token-2022 `TransferChecked` (disc `0x0c`): `cosigner_meme_ata → attacker_meme_ata`,
    `amount = swap_amount`, authority = cosigner.
