@@ -1,0 +1,1 @@
+Veilo privacy_pool Critical — whitelisted relayer can redirect 100% of a position’s source tokens during close_position_to_sol; reproducible Surfpool mainnet-fork composition witness.

@@ -1,0 +1,13 @@
+[package]
+name = "veilo-close-theft-harness"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "harness-lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+solana-program = "=2.1.21"
+
+[workspace]

